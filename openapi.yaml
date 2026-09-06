@@ -1,0 +1,1652 @@
+openapi: 3.1.0
+info:
+  # Do not change the title, if the title changes, the import paths will be broken
+  title: Api
+  version: 0.1.0
+  description: IQ Motor - Motorcycle & Bike Marketplace API
+servers:
+  - url: /api
+    description: Base API path
+tags:
+  - name: health
+    description: Health operations
+  - name: vehicles
+    description: Vehicle listings
+  - name: brands
+    description: Vehicle brands and models
+  - name: categories
+    description: Vehicle types, fuel types, transmissions, conditions
+  - name: locations
+    description: Regions and cities
+  - name: favorites
+    description: User favorites
+  - name: profile
+    description: User profile management
+  - name: dealers
+    description: Dealer profiles
+  - name: messages
+    description: Messaging between users
+  - name: admin
+    description: Admin panel operations
+  - name: stats
+    description: Statistics and analytics
+
+paths:
+  /healthz:
+    get:
+      operationId: healthCheck
+      tags: [health]
+      summary: Health check
+      responses:
+        "200":
+          description: Healthy
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthStatus"
+
+  # ─── Vehicles ───────────────────────────────────────────────────────────────
+
+  /vehicles:
+    get:
+      operationId: listVehicles
+      tags: [vehicles]
+      summary: List and search vehicles
+      parameters:
+        - name: page
+          in: query
+          schema: { type: integer, default: 1 }
+        - name: limit
+          in: query
+          schema: { type: integer, default: 20 }
+        - name: brand_id
+          in: query
+          schema: { type: ["integer", "null"] }
+        - name: model_id
+          in: query
+          schema: { type: ["integer", "null"] }
+        - name: vehicle_type_id
+          in: query
+          schema: { type: ["integer", "null"] }
+        - name: condition_id
+          in: query
+          schema: { type: ["integer", "null"] }
+        - name: fuel_type_id
+          in: query
+          schema: { type: ["integer", "null"] }
+        - name: transmission_id
+          in: query
+          schema: { type: ["integer", "null"] }
+        - name: region_id
+          in: query
+          schema: { type: ["integer", "null"] }
+        - name: city_id
+          in: query
+          schema: { type: ["integer", "null"] }
+        - name: year_min
+          in: query
+          schema: { type: ["integer", "null"] }
+        - name: year_max
+          in: query
+          schema: { type: ["integer", "null"] }
+        - name: price_min
+          in: query
+          schema: { type: ["number", "null"] }
+        - name: price_max
+          in: query
+          schema: { type: ["number", "null"] }
+        - name: mileage_max
+          in: query
+          schema: { type: ["integer", "null"] }
+        - name: color_id
+          in: query
+          schema: { type: ["integer", "null"] }
+        - name: seller_type
+          in: query
+          schema: { type: ["string", "null"], enum: [individual, dealer, null] }
+        - name: is_negotiable
+          in: query
+          schema: { type: ["boolean", "null"] }
+        - name: keyword
+          in: query
+          schema: { type: ["string", "null"] }
+        - name: sort
+          in: query
+          schema:
+            type: string
+            enum: [newest, oldest, price_asc, price_desc, most_viewed, most_favorited]
+            default: newest
+        - name: featured_only
+          in: query
+          schema: { type: ["boolean", "null"] }
+        - name: currency
+          in: query
+          schema: { type: string, default: USD }
+      responses:
+        "200":
+          description: Paginated vehicle list
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VehicleListResponse"
+
+    post:
+      operationId: createVehicle
+      tags: [vehicles]
+      summary: Create a new vehicle listing
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/VehicleInput"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Vehicle"
+
+  /vehicles/featured:
+    get:
+      operationId: listFeaturedVehicles
+      tags: [vehicles]
+      summary: Get featured vehicles for the landing page
+      parameters:
+        - name: limit
+          in: query
+          schema: { type: integer, default: 8 }
+      responses:
+        "200":
+          description: Featured vehicles
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/VehicleSummary"
+
+  /vehicles/latest:
+    get:
+      operationId: listLatestVehicles
+      tags: [vehicles]
+      summary: Get latest vehicles for the landing page
+      parameters:
+        - name: limit
+          in: query
+          schema: { type: integer, default: 12 }
+      responses:
+        "200":
+          description: Latest vehicles
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/VehicleSummary"
+
+  /vehicles/{id}:
+    get:
+      operationId: getVehicle
+      tags: [vehicles]
+      summary: Get vehicle details
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: Vehicle detail
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VehicleDetail"
+        "404":
+          description: Not found
+
+    patch:
+      operationId: updateVehicle
+      tags: [vehicles]
+      summary: Update a vehicle listing
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/VehicleUpdate"
+      responses:
+        "200":
+          description: Updated vehicle
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Vehicle"
+
+    delete:
+      operationId: deleteVehicle
+      tags: [vehicles]
+      summary: Delete a vehicle listing
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "204":
+          description: Deleted
+
+  /vehicles/{id}/similar:
+    get:
+      operationId: listSimilarVehicles
+      tags: [vehicles]
+      summary: Get similar vehicles
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: Similar vehicles
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/VehicleSummary"
+
+  /vehicles/{id}/images:
+    post:
+      operationId: addVehicleImage
+      tags: [vehicles]
+      summary: Add image to a vehicle listing
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/VehicleImageInput"
+      responses:
+        "201":
+          description: Image added
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VehicleImage"
+
+  /vehicles/{id}/images/{imageId}:
+    delete:
+      operationId: deleteVehicleImage
+      tags: [vehicles]
+      summary: Delete a vehicle image
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+        - name: imageId
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "204":
+          description: Deleted
+
+  /vehicles/{id}/publish:
+    post:
+      operationId: publishVehicle
+      tags: [vehicles]
+      summary: Publish a draft vehicle listing
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: Published vehicle
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Vehicle"
+
+  /vehicles/{id}/report:
+    post:
+      operationId: reportVehicle
+      tags: [vehicles]
+      summary: Report a vehicle listing
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ReportInput"
+      responses:
+        "201":
+          description: Report submitted
+
+  # ─── Brands & Models ────────────────────────────────────────────────────────
+
+  /brands:
+    get:
+      operationId: listBrands
+      tags: [brands]
+      summary: List all brands
+      parameters:
+        - name: vehicle_type_id
+          in: query
+          schema: { type: ["integer", "null"] }
+        - name: with_counts
+          in: query
+          schema: { type: boolean, default: false }
+      responses:
+        "200":
+          description: Brand list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Brand"
+
+  /brands/{id}/models:
+    get:
+      operationId: listBrandModels
+      tags: [brands]
+      summary: Get models for a brand
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: Model list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/VehicleModel"
+
+  # ─── Categories ─────────────────────────────────────────────────────────────
+
+  /vehicle-types:
+    get:
+      operationId: listVehicleTypes
+      tags: [categories]
+      summary: List vehicle types
+      responses:
+        "200":
+          description: Vehicle types
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/VehicleType"
+
+  /fuel-types:
+    get:
+      operationId: listFuelTypes
+      tags: [categories]
+      summary: List fuel types
+      responses:
+        "200":
+          description: Fuel types
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/FuelType"
+
+  /transmissions:
+    get:
+      operationId: listTransmissions
+      tags: [categories]
+      summary: List transmissions
+      responses:
+        "200":
+          description: Transmissions
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Transmission"
+
+  /conditions:
+    get:
+      operationId: listConditions
+      tags: [categories]
+      summary: List conditions
+      responses:
+        "200":
+          description: Conditions
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Condition"
+
+  /colors:
+    get:
+      operationId: listColors
+      tags: [categories]
+      summary: List colors
+      responses:
+        "200":
+          description: Colors
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/VehicleColor"
+
+  # ─── Locations ──────────────────────────────────────────────────────────────
+
+  /regions:
+    get:
+      operationId: listRegions
+      tags: [locations]
+      summary: List regions
+      parameters:
+        - name: with_counts
+          in: query
+          schema: { type: boolean, default: false }
+      responses:
+        "200":
+          description: Region list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Region"
+
+  /regions/{id}/cities:
+    get:
+      operationId: listRegionCities
+      tags: [locations]
+      summary: List cities in a region
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: City list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/City"
+
+  /cities:
+    get:
+      operationId: listCities
+      tags: [locations]
+      summary: List all cities
+      parameters:
+        - name: with_counts
+          in: query
+          schema: { type: boolean, default: false }
+      responses:
+        "200":
+          description: City list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/City"
+
+  # ─── Exchange Rates ──────────────────────────────────────────────────────────
+
+  /exchange-rates:
+    get:
+      operationId: getExchangeRates
+      tags: [categories]
+      summary: Get current IQD/USD exchange rate
+      responses:
+        "200":
+          description: Current exchange rate
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ExchangeRate"
+
+  # ─── Favorites ──────────────────────────────────────────────────────────────
+
+  /favorites:
+    get:
+      operationId: listFavorites
+      tags: [favorites]
+      summary: Get current user's favorites
+      responses:
+        "200":
+          description: Favorites list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/VehicleSummary"
+
+  /favorites/{vehicleId}:
+    post:
+      operationId: addFavorite
+      tags: [favorites]
+      summary: Add vehicle to favorites
+      parameters:
+        - name: vehicleId
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "201":
+          description: Added
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FavoriteStatus"
+
+    delete:
+      operationId: removeFavorite
+      tags: [favorites]
+      summary: Remove vehicle from favorites
+      parameters:
+        - name: vehicleId
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: Removed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FavoriteStatus"
+
+  # ─── Profile ────────────────────────────────────────────────────────────────
+
+  /profile:
+    get:
+      operationId: getProfile
+      tags: [profile]
+      summary: Get current user profile
+      responses:
+        "200":
+          description: User profile
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserProfile"
+
+    patch:
+      operationId: updateProfile
+      tags: [profile]
+      summary: Update current user profile
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ProfileUpdate"
+      responses:
+        "200":
+          description: Updated profile
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserProfile"
+
+  /profile/vehicles:
+    get:
+      operationId: getMyVehicles
+      tags: [profile]
+      summary: Get current user's vehicle listings
+      parameters:
+        - name: status
+          in: query
+          schema:
+            type: ["string", "null"]
+            enum: [draft, active, sold, deleted, null]
+      responses:
+        "200":
+          description: User's vehicles
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/VehicleSummary"
+
+  # ─── Dealers ────────────────────────────────────────────────────────────────
+
+  /dealers:
+    get:
+      operationId: listDealers
+      tags: [dealers]
+      summary: List verified dealers
+      parameters:
+        - name: city_id
+          in: query
+          schema: { type: ["integer", "null"] }
+        - name: limit
+          in: query
+          schema: { type: integer, default: 20 }
+      responses:
+        "200":
+          description: Dealers list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/DealerSummary"
+
+  /dealers/{id}:
+    get:
+      operationId: getDealer
+      tags: [dealers]
+      summary: Get dealer profile
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: Dealer profile
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DealerProfile"
+
+  /dealers/{id}/vehicles:
+    get:
+      operationId: getDealerVehicles
+      tags: [dealers]
+      summary: Get dealer's active listings
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: Dealer's vehicles
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VehicleListResponse"
+
+  /dealer-profile:
+    get:
+      operationId: getMyDealerProfile
+      tags: [dealers]
+      summary: Get current user's dealer profile
+      responses:
+        "200":
+          description: My dealer profile
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DealerProfile"
+
+    post:
+      operationId: createDealerProfile
+      tags: [dealers]
+      summary: Create dealer profile for current user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DealerInput"
+      responses:
+        "201":
+          description: Created dealer profile
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DealerProfile"
+
+    patch:
+      operationId: updateDealerProfile
+      tags: [dealers]
+      summary: Update current user's dealer profile
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DealerUpdate"
+      responses:
+        "200":
+          description: Updated dealer profile
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DealerProfile"
+
+  # ─── Messages ────────────────────────────────────────────────────────────────
+
+  /messages:
+    get:
+      operationId: listConversations
+      tags: [messages]
+      summary: List user's conversations
+      responses:
+        "200":
+          description: Conversations
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Conversation"
+
+  /messages/{vehicleId}:
+    get:
+      operationId: getConversation
+      tags: [messages]
+      summary: Get messages for a vehicle conversation
+      parameters:
+        - name: vehicleId
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: Messages
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Message"
+
+    post:
+      operationId: sendMessage
+      tags: [messages]
+      summary: Send a message about a vehicle
+      parameters:
+        - name: vehicleId
+          in: path
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MessageInput"
+      responses:
+        "201":
+          description: Message sent
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Message"
+
+  # ─── Stats ───────────────────────────────────────────────────────────────────
+
+  /stats/dashboard:
+    get:
+      operationId: getDashboardStats
+      tags: [stats]
+      summary: Get marketplace stats for the landing page
+      responses:
+        "200":
+          description: Dashboard statistics
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DashboardStats"
+
+  /stats/popular-brands:
+    get:
+      operationId: getPopularBrands
+      tags: [stats]
+      summary: Get popular brands with listing counts
+      parameters:
+        - name: limit
+          in: query
+          schema: { type: integer, default: 10 }
+      responses:
+        "200":
+          description: Popular brands
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/BrandStat"
+
+  /stats/popular-cities:
+    get:
+      operationId: getPopularCities
+      tags: [stats]
+      summary: Get popular cities with listing counts
+      parameters:
+        - name: limit
+          in: query
+          schema: { type: integer, default: 8 }
+      responses:
+        "200":
+          description: Popular cities
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/CityStat"
+
+  # ─── Admin ───────────────────────────────────────────────────────────────────
+
+  /admin/stats:
+    get:
+      operationId: getAdminStats
+      tags: [admin]
+      summary: Admin overview statistics
+      responses:
+        "200":
+          description: Admin stats
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AdminStats"
+
+  /admin/vehicles:
+    get:
+      operationId: adminListVehicles
+      tags: [admin]
+      summary: Admin list all vehicles
+      parameters:
+        - name: page
+          in: query
+          schema: { type: integer, default: 1 }
+        - name: status
+          in: query
+          schema: { type: ["string", "null"] }
+        - name: keyword
+          in: query
+          schema: { type: ["string", "null"] }
+      responses:
+        "200":
+          description: Vehicles
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VehicleListResponse"
+
+  /admin/vehicles/{id}/approve:
+    post:
+      operationId: adminApproveVehicle
+      tags: [admin]
+      summary: Approve a vehicle listing
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: Approved
+
+  /admin/vehicles/{id}/reject:
+    post:
+      operationId: adminRejectVehicle
+      tags: [admin]
+      summary: Reject a vehicle listing
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RejectInput"
+      responses:
+        "200":
+          description: Rejected
+
+  /admin/users:
+    get:
+      operationId: adminListUsers
+      tags: [admin]
+      summary: Admin list all users
+      parameters:
+        - name: page
+          in: query
+          schema: { type: integer, default: 1 }
+        - name: keyword
+          in: query
+          schema: { type: ["string", "null"] }
+        - name: role
+          in: query
+          schema: { type: ["string", "null"] }
+      responses:
+        "200":
+          description: Users
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AdminUserListResponse"
+
+  /admin/dealers:
+    get:
+      operationId: adminListDealers
+      tags: [admin]
+      summary: Admin list all dealers
+      parameters:
+        - name: page
+          in: query
+          schema: { type: integer, default: 1 }
+        - name: verified
+          in: query
+          schema: { type: ["boolean", "null"] }
+      responses:
+        "200":
+          description: Dealers
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/DealerSummary"
+
+  /admin/dealers/{id}/verify:
+    post:
+      operationId: adminVerifyDealer
+      tags: [admin]
+      summary: Verify a dealer
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: Verified
+
+  /admin/brands:
+    get:
+      operationId: adminListBrands
+      tags: [admin]
+      summary: Admin list brands
+      responses:
+        "200":
+          description: Brands
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Brand"
+
+    post:
+      operationId: adminCreateBrand
+      tags: [admin]
+      summary: Create a brand
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BrandInput"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Brand"
+
+  /admin/exchange-rate:
+    patch:
+      operationId: adminUpdateExchangeRate
+      tags: [admin]
+      summary: Update the IQD/USD exchange rate
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ExchangeRateUpdate"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ExchangeRate"
+
+  /admin/featured/{vehicleId}:
+    post:
+      operationId: adminFeatureVehicle
+      tags: [admin]
+      summary: Feature a vehicle listing
+      parameters:
+        - name: vehicleId
+          in: path
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/FeaturedInput"
+      responses:
+        "200":
+          description: Featured
+
+    delete:
+      operationId: adminUnfeatureVehicle
+      tags: [admin]
+      summary: Remove featured status
+      parameters:
+        - name: vehicleId
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "204":
+          description: Removed
+
+  /admin/reports:
+    get:
+      operationId: adminListReports
+      tags: [admin]
+      summary: Get pending reports
+      parameters:
+        - name: page
+          in: query
+          schema: { type: integer, default: 1 }
+        - name: status
+          in: query
+          schema: { type: ["string", "null"] }
+      responses:
+        "200":
+          description: Reports
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/VehicleReport"
+
+# ─── Components ──────────────────────────────────────────────────────────────
+
+components:
+  schemas:
+    HealthStatus:
+      type: object
+      properties:
+        status: { type: string }
+      required: [status]
+
+    # ── Reference / Category Schemas ──────────────────────────────────────────
+
+    VehicleType:
+      type: object
+      properties:
+        id: { type: integer }
+        name: { type: string }
+        name_ar: { type: string }
+        name_ku: { type: string }
+        icon: { type: ["string", "null"] }
+        listing_count: { type: ["integer", "null"] }
+      required: [id, name, name_ar, name_ku]
+
+    FuelType:
+      type: object
+      properties:
+        id: { type: integer }
+        name: { type: string }
+        name_ar: { type: string }
+        name_ku: { type: string }
+      required: [id, name, name_ar, name_ku]
+
+    Transmission:
+      type: object
+      properties:
+        id: { type: integer }
+        name: { type: string }
+        name_ar: { type: string }
+        name_ku: { type: string }
+      required: [id, name, name_ar, name_ku]
+
+    Condition:
+      type: object
+      properties:
+        id: { type: integer }
+        name: { type: string }
+        name_ar: { type: string }
+        name_ku: { type: string }
+      required: [id, name, name_ar, name_ku]
+
+    VehicleColor:
+      type: object
+      properties:
+        id: { type: integer }
+        name: { type: string }
+        name_ar: { type: string }
+        name_ku: { type: string }
+        hex_code: { type: ["string", "null"] }
+      required: [id, name, name_ar, name_ku]
+
+    Brand:
+      type: object
+      properties:
+        id: { type: integer }
+        name: { type: string }
+        logo_url: { type: ["string", "null"] }
+        listing_count: { type: ["integer", "null"] }
+      required: [id, name]
+
+    BrandInput:
+      type: object
+      properties:
+        name: { type: string }
+        logo_url: { type: ["string", "null"] }
+      required: [name]
+
+    VehicleModel:
+      type: object
+      properties:
+        id: { type: integer }
+        brand_id: { type: integer }
+        name: { type: string }
+        listing_count: { type: ["integer", "null"] }
+      required: [id, brand_id, name]
+
+    Region:
+      type: object
+      properties:
+        id: { type: integer }
+        name: { type: string }
+        name_ar: { type: string }
+        name_ku: { type: string }
+        listing_count: { type: ["integer", "null"] }
+      required: [id, name, name_ar, name_ku]
+
+    City:
+      type: object
+      properties:
+        id: { type: integer }
+        region_id: { type: integer }
+        name: { type: string }
+        name_ar: { type: string }
+        name_ku: { type: string }
+        listing_count: { type: ["integer", "null"] }
+      required: [id, region_id, name, name_ar, name_ku]
+
+    ExchangeRate:
+      type: object
+      properties:
+        iqd_per_usd: { type: number }
+        updated_at: { type: string }
+      required: [iqd_per_usd, updated_at]
+
+    ExchangeRateUpdate:
+      type: object
+      properties:
+        iqd_per_usd: { type: number }
+      required: [iqd_per_usd]
+
+    # ── Vehicle Schemas ────────────────────────────────────────────────────────
+
+    VehicleImage:
+      type: object
+      properties:
+        id: { type: string }
+        url: { type: string }
+        thumbnail_url: { type: ["string", "null"] }
+        is_cover: { type: boolean }
+        sort_order: { type: integer }
+      required: [id, url, is_cover, sort_order]
+
+    VehicleImageInput:
+      type: object
+      properties:
+        url: { type: string }
+        thumbnail_url: { type: ["string", "null"] }
+        is_cover: { type: boolean }
+        sort_order: { type: integer }
+      required: [url]
+
+    VehicleSummary:
+      type: object
+      properties:
+        id: { type: string }
+        title: { type: string }
+        brand: { type: string }
+        model: { type: string }
+        year: { type: integer }
+        price: { type: number }
+        price_usd: { type: ["number", "null"] }
+        currency: { type: string }
+        mileage: { type: ["integer", "null"] }
+        condition: { type: string }
+        city: { type: string }
+        region: { type: string }
+        cover_image: { type: ["string", "null"] }
+        is_negotiable: { type: boolean }
+        is_featured: { type: boolean }
+        seller_type: { type: string }
+        views_count: { type: integer }
+        favorites_count: { type: integer }
+        is_favorited: { type: ["boolean", "null"] }
+        status: { type: string }
+        created_at: { type: string }
+      required: [id, title, brand, model, year, price, currency, condition, city, region, is_negotiable, is_featured, seller_type, views_count, favorites_count, status, created_at]
+
+    Vehicle:
+      type: object
+      properties:
+        id: { type: string }
+        title: { type: string }
+        brand_id: { type: integer }
+        model_id: { type: integer }
+        vehicle_type_id: { type: integer }
+        year: { type: integer }
+        mileage: { type: ["integer", "null"] }
+        engine_size: { type: ["integer", "null"] }
+        horsepower: { type: ["integer", "null"] }
+        transmission_id: { type: ["integer", "null"] }
+        fuel_type_id: { type: ["integer", "null"] }
+        drive_type_id: { type: ["integer", "null"] }
+        color_id: { type: ["integer", "null"] }
+        condition_id: { type: integer }
+        vin: { type: ["string", "null"] }
+        price: { type: number }
+        currency: { type: string }
+        is_negotiable: { type: boolean }
+        description: { type: ["string", "null"] }
+        region_id: { type: integer }
+        city_id: { type: integer }
+        latitude: { type: ["number", "null"] }
+        longitude: { type: ["number", "null"] }
+        status: { type: string }
+        owner_id: { type: string }
+        dealer_id: { type: ["string", "null"] }
+        created_at: { type: string }
+        updated_at: { type: string }
+      required: [id, title, brand_id, model_id, vehicle_type_id, year, condition_id, price, currency, is_negotiable, region_id, city_id, status, owner_id, created_at, updated_at]
+
+    VehicleDetail:
+      type: object
+      properties:
+        id: { type: string }
+        title: { type: string }
+        brand: { $ref: "#/components/schemas/Brand" }
+        model: { $ref: "#/components/schemas/VehicleModel" }
+        vehicle_type: { $ref: "#/components/schemas/VehicleType" }
+        year: { type: integer }
+        mileage: { type: ["integer", "null"] }
+        engine_size: { type: ["integer", "null"] }
+        horsepower: { type: ["integer", "null"] }
+        transmission: { $ref: "#/components/schemas/Transmission" }
+        fuel_type: { $ref: "#/components/schemas/FuelType" }
+        color: { $ref: "#/components/schemas/VehicleColor" }
+        condition: { $ref: "#/components/schemas/Condition" }
+        vin: { type: ["string", "null"] }
+        price: { type: number }
+        price_usd: { type: ["number", "null"] }
+        price_iqd: { type: ["number", "null"] }
+        currency: { type: string }
+        is_negotiable: { type: boolean }
+        description: { type: ["string", "null"] }
+        region: { $ref: "#/components/schemas/Region" }
+        city: { $ref: "#/components/schemas/City" }
+        latitude: { type: ["number", "null"] }
+        longitude: { type: ["number", "null"] }
+        images: { type: array, items: { $ref: "#/components/schemas/VehicleImage" } }
+        seller: { $ref: "#/components/schemas/PublicUser" }
+        dealer: { $ref: "#/components/schemas/DealerSummary" }
+        is_featured: { type: boolean }
+        is_favorited: { type: ["boolean", "null"] }
+        views_count: { type: integer }
+        favorites_count: { type: integer }
+        status: { type: string }
+        created_at: { type: string }
+        updated_at: { type: string }
+      required: [id, title, brand, model, vehicle_type, year, condition, price, currency, is_negotiable, region, city, images, seller, is_featured, views_count, favorites_count, status, created_at, updated_at]
+
+    VehicleInput:
+      type: object
+      properties:
+        title: { type: string }
+        brand_id: { type: integer }
+        model_id: { type: integer }
+        vehicle_type_id: { type: integer }
+        year: { type: integer }
+        mileage: { type: ["integer", "null"] }
+        engine_size: { type: ["integer", "null"] }
+        horsepower: { type: ["integer", "null"] }
+        transmission_id: { type: ["integer", "null"] }
+        fuel_type_id: { type: ["integer", "null"] }
+        color_id: { type: ["integer", "null"] }
+        condition_id: { type: integer }
+        vin: { type: ["string", "null"] }
+        price: { type: number }
+        currency: { type: string, enum: [USD, IQD] }
+        is_negotiable: { type: boolean }
+        description: { type: ["string", "null"] }
+        region_id: { type: integer }
+        city_id: { type: integer }
+        latitude: { type: ["number", "null"] }
+        longitude: { type: ["number", "null"] }
+        status: { type: string, enum: [draft, active] }
+      required: [title, brand_id, model_id, vehicle_type_id, year, condition_id, price, currency, region_id, city_id]
+
+    VehicleUpdate:
+      type: object
+      properties:
+        title: { type: ["string", "null"] }
+        price: { type: ["number", "null"] }
+        currency: { type: ["string", "null"] }
+        is_negotiable: { type: ["boolean", "null"] }
+        description: { type: ["string", "null"] }
+        mileage: { type: ["integer", "null"] }
+        status: { type: ["string", "null"] }
+        city_id: { type: ["integer", "null"] }
+        region_id: { type: ["integer", "null"] }
+
+    VehicleListResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/VehicleSummary"
+        total: { type: integer }
+        page: { type: integer }
+        limit: { type: integer }
+        total_pages: { type: integer }
+      required: [data, total, page, limit, total_pages]
+
+    # ── User / Profile Schemas ────────────────────────────────────────────────
+
+    PublicUser:
+      type: object
+      properties:
+        id: { type: string }
+        display_name: { type: string }
+        avatar_url: { type: ["string", "null"] }
+        phone: { type: ["string", "null"] }
+        whatsapp: { type: ["string", "null"] }
+        role: { type: string }
+        created_at: { type: string }
+      required: [id, display_name, role, created_at]
+
+    UserProfile:
+      type: object
+      properties:
+        id: { type: string }
+        email: { type: string }
+        display_name: { type: string }
+        avatar_url: { type: ["string", "null"] }
+        phone: { type: ["string", "null"] }
+        whatsapp: { type: ["string", "null"] }
+        city_id: { type: ["integer", "null"] }
+        region_id: { type: ["integer", "null"] }
+        role: { type: string }
+        is_dealer: { type: boolean }
+        created_at: { type: string }
+      required: [id, email, display_name, role, is_dealer, created_at]
+
+    ProfileUpdate:
+      type: object
+      properties:
+        display_name: { type: ["string", "null"] }
+        avatar_url: { type: ["string", "null"] }
+        phone: { type: ["string", "null"] }
+        whatsapp: { type: ["string", "null"] }
+        city_id: { type: ["integer", "null"] }
+        region_id: { type: ["integer", "null"] }
+
+    # ── Dealer Schemas ─────────────────────────────────────────────────────────
+
+    DealerSummary:
+      type: object
+      properties:
+        id: { type: string }
+        business_name: { type: string }
+        logo_url: { type: ["string", "null"] }
+        city: { type: string }
+        is_verified: { type: boolean }
+        listing_count: { type: ["integer", "null"] }
+        phone: { type: ["string", "null"] }
+        whatsapp: { type: ["string", "null"] }
+      required: [id, business_name, city, is_verified]
+
+    DealerProfile:
+      type: object
+      properties:
+        id: { type: string }
+        user_id: { type: string }
+        business_name: { type: string }
+        logo_url: { type: ["string", "null"] }
+        banner_url: { type: ["string", "null"] }
+        description: { type: ["string", "null"] }
+        phone: { type: ["string", "null"] }
+        whatsapp: { type: ["string", "null"] }
+        website: { type: ["string", "null"] }
+        facebook: { type: ["string", "null"] }
+        instagram: { type: ["string", "null"] }
+        city_id: { type: integer }
+        region_id: { type: integer }
+        city: { type: string }
+        region: { type: string }
+        latitude: { type: ["number", "null"] }
+        longitude: { type: ["number", "null"] }
+        is_verified: { type: boolean }
+        listing_count: { type: integer }
+        created_at: { type: string }
+      required: [id, user_id, business_name, city_id, region_id, city, region, is_verified, listing_count, created_at]
+
+    DealerInput:
+      type: object
+      properties:
+        business_name: { type: string }
+        logo_url: { type: ["string", "null"] }
+        banner_url: { type: ["string", "null"] }
+        description: { type: ["string", "null"] }
+        phone: { type: ["string", "null"] }
+        whatsapp: { type: ["string", "null"] }
+        website: { type: ["string", "null"] }
+        facebook: { type: ["string", "null"] }
+        instagram: { type: ["string", "null"] }
+        city_id: { type: integer }
+        region_id: { type: integer }
+        latitude: { type: ["number", "null"] }
+        longitude: { type: ["number", "null"] }
+      required: [business_name, city_id, region_id]
+
+    DealerUpdate:
+      type: object
+      properties:
+        business_name: { type: ["string", "null"] }
+        logo_url: { type: ["string", "null"] }
+        banner_url: { type: ["string", "null"] }
+        description: { type: ["string", "null"] }
+        phone: { type: ["string", "null"] }
+        whatsapp: { type: ["string", "null"] }
+        website: { type: ["string", "null"] }
+        facebook: { type: ["string", "null"] }
+        instagram: { type: ["string", "null"] }
+
+    # ── Favorites ─────────────────────────────────────────────────────────────
+
+    FavoriteStatus:
+      type: object
+      properties:
+        vehicle_id: { type: string }
+        is_favorited: { type: boolean }
+      required: [vehicle_id, is_favorited]
+
+    # ── Messages ──────────────────────────────────────────────────────────────
+
+    Message:
+      type: object
+      properties:
+        id: { type: string }
+        vehicle_id: { type: string }
+        sender_id: { type: string }
+        receiver_id: { type: string }
+        content: { type: string }
+        is_read: { type: boolean }
+        created_at: { type: string }
+        sender: { $ref: "#/components/schemas/PublicUser" }
+      required: [id, vehicle_id, sender_id, receiver_id, content, is_read, created_at, sender]
+
+    MessageInput:
+      type: object
+      properties:
+        content: { type: string }
+        receiver_id: { type: string }
+      required: [content, receiver_id]
+
+    Conversation:
+      type: object
+      properties:
+        vehicle_id: { type: string }
+        vehicle_title: { type: string }
+        vehicle_cover: { type: ["string", "null"] }
+        other_user: { $ref: "#/components/schemas/PublicUser" }
+        last_message: { type: string }
+        last_message_at: { type: string }
+        unread_count: { type: integer }
+      required: [vehicle_id, vehicle_title, other_user, last_message, last_message_at, unread_count]
+
+    # ── Reports ───────────────────────────────────────────────────────────────
+
+    ReportInput:
+      type: object
+      properties:
+        reason: { type: string, enum: [spam, fraud, inappropriate, duplicate, other] }
+        description: { type: ["string", "null"] }
+      required: [reason]
+
+    VehicleReport:
+      type: object
+      properties:
+        id: { type: string }
+        vehicle_id: { type: string }
+        vehicle_title: { type: string }
+        reporter_id: { type: string }
+        reason: { type: string }
+        description: { type: ["string", "null"] }
+        status: { type: string }
+        created_at: { type: string }
+      required: [id, vehicle_id, vehicle_title, reporter_id, reason, status, created_at]
+
+    RejectInput:
+      type: object
+      properties:
+        reason: { type: string }
+      required: [reason]
+
+    # ── Stats ─────────────────────────────────────────────────────────────────
+
+    DashboardStats:
+      type: object
+      properties:
+        total_listings: { type: integer }
+        active_listings: { type: integer }
+        total_users: { type: integer }
+        total_dealers: { type: integer }
+        today_listings: { type: integer }
+      required: [total_listings, active_listings, total_users, total_dealers, today_listings]
+
+    BrandStat:
+      type: object
+      properties:
+        id: { type: integer }
+        name: { type: string }
+        logo_url: { type: ["string", "null"] }
+        listing_count: { type: integer }
+      required: [id, name, listing_count]
+
+    CityStat:
+      type: object
+      properties:
+        id: { type: integer }
+        name: { type: string }
+        name_ar: { type: string }
+        listing_count: { type: integer }
+      required: [id, name, name_ar, listing_count]
+
+    # ── Admin Schemas ─────────────────────────────────────────────────────────
+
+    AdminStats:
+      type: object
+      properties:
+        total_users: { type: integer }
+        total_dealers: { type: integer }
+        total_listings: { type: integer }
+        active_listings: { type: integer }
+        pending_listings: { type: integer }
+        total_reports: { type: integer }
+        pending_reports: { type: integer }
+        today_signups: { type: integer }
+        today_listings: { type: integer }
+      required: [total_users, total_dealers, total_listings, active_listings, pending_listings, total_reports, pending_reports, today_signups, today_listings]
+
+    AdminUser:
+      type: object
+      properties:
+        id: { type: string }
+        email: { type: string }
+        display_name: { type: string }
+        role: { type: string }
+        is_dealer: { type: boolean }
+        listing_count: { type: integer }
+        created_at: { type: string }
+      required: [id, email, display_name, role, is_dealer, listing_count, created_at]
+
+    AdminUserListResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/AdminUser"
+        total: { type: integer }
+        page: { type: integer }
+      required: [data, total, page]
+
+    FeaturedInput:
+      type: object
+      properties:
+        expires_at: { type: ["string", "null"] }
