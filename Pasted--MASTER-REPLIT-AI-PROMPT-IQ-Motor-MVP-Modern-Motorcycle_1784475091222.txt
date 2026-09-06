@@ -1,0 +1,925 @@
+# MASTER REPLIT AI PROMPT
+
+## IQ Motor MVP — Modern Motorcycle & Bike Marketplace for Iraq
+
+Copy everything below into Replit AI.
+
+---
+
+# ROLE
+
+You are a team of world-class software engineers, product managers, UX designers, database architects, DevOps engineers, and QA engineers.
+
+You are building a **production-quality MVP**, not a demo.
+
+Think before coding.
+
+Do NOT skip architecture.
+
+Do NOT generate placeholder implementations.
+
+Every feature should be fully functional.
+
+---
+
+# PRODUCT
+
+Build a modern marketplace called
+
+# IQ Motor
+
+A marketplace dedicated to motorcycles, bikes, scooters, ATVs, and similar vehicles across Iraq.
+
+The platform allows:
+
+* Individual sellers
+* Dealers
+* Buyers
+
+to buy and sell vehicles in an easy, modern, secure way.
+
+The long-term vision is to become Iraq's largest vehicle marketplace.
+
+The MVP focuses on motorcycles and bikes first, with the architecture designed so cars, trucks, boats, agricultural equipment, and other vehicle types can be added later without requiring database redesign. 
+
+---
+
+# TECH STACK
+
+Use ONLY:
+
+Frontend
+
+* Next.js 15 (App Router)
+* React
+* TypeScript
+* Tailwind CSS
+* shadcn/ui
+
+Backend
+
+* Supabase
+
+Database
+
+* PostgreSQL
+
+Authentication
+
+* Supabase Auth
+
+Storage
+
+* Supabase Storage
+
+Maps
+
+* OpenStreetMap
+* Leaflet
+
+Forms
+
+* React Hook Form
+* Zod
+
+Image Processing
+
+* Browser compression before upload
+* WebP generation
+
+State
+
+* TanStack Query
+* Zustand
+
+Icons
+
+* Lucide
+
+Charts
+
+* Recharts
+
+Deployment
+
+* Replit
+
+---
+
+# UI STYLE
+
+Modern
+
+Minimal
+
+Premium
+
+Fast
+
+Inspired by
+
+* Airbnb
+* Cars.com
+* Mobile.de
+* Facebook Marketplace
+
+NOT
+
+Old dashboards
+
+Bootstrap
+
+Material UI
+
+---
+
+# COLORS
+
+Primary
+
+Navy
+
+#0F2747
+
+Secondary
+
+#1E4D8F
+
+Accent
+
+#4EA5FF
+
+Success
+
+#1FA971
+
+Warning
+
+#F9A826
+
+Danger
+
+#D64545
+
+Background
+
+#F8FAFC
+
+Dark Mode
+
+Fully supported
+
+---
+
+# TYPOGRAPHY
+
+Inter
+
+Large headings
+
+Rounded cards
+
+Soft shadows
+
+16px border radius
+
+Smooth animations
+
+---
+
+# RESPONSIVE
+
+Mobile First
+
+Desktop
+
+Tablet
+
+Perfect on all devices
+
+---
+
+# DATABASE
+
+Design normalized PostgreSQL tables.
+
+Include relationships.
+
+Use UUIDs.
+
+Soft deletes.
+
+created_at
+
+updated_at
+
+Indexes.
+
+Foreign keys.
+
+---
+
+## Tables
+
+users
+
+dealer_profiles
+
+vehicles
+
+vehicle_images
+
+favorites
+
+vehicle_views
+
+vehicle_reports
+
+messages
+
+brands
+
+models
+
+cities
+
+regions
+
+vehicle_types
+
+fuel_types
+
+drive_types
+
+transmissions
+
+colors
+
+conditions
+
+currencies
+
+exchange_rates
+
+featured_listings
+
+subscriptions
+
+notifications
+
+audit_logs
+
+admin_users
+
+---
+
+# VEHICLE CATEGORIES
+
+Start with
+
+Motorcycle
+
+Bike
+
+Scooter
+
+ATV
+
+Electric Bike
+
+Dirt Bike
+
+Quad Bike
+
+Moped
+
+Design so additional categories can be added later.
+
+---
+
+# VEHICLE LISTING
+
+Each listing contains:
+
+Title
+
+Brand
+
+Model
+
+Year
+
+Mileage
+
+Transmission
+
+Fuel
+
+Engine Size
+
+Horsepower
+
+Drive Type
+
+Color
+
+VIN (optional)
+
+Price
+
+Currency
+
+Automatic IQD/USD conversion
+
+Negotiable
+
+Condition
+
+Owner Count
+
+Import Source
+
+Description
+
+Region
+
+City
+
+Latitude
+
+Longitude
+
+Dealer
+
+Seller
+
+Status
+
+Views
+
+Favorites
+
+Created Date
+
+Updated Date
+
+---
+
+# IMAGES
+
+Support
+
+Drag & Drop (desktop)
+
+Multi-upload
+
+Automatic compression
+
+Maximum 15 images
+
+Automatic WebP conversion
+
+Progress bars
+
+Sortable images
+
+Cover image
+
+Delete image
+
+Preview
+
+---
+
+# SEARCH
+
+Implement advanced filtering.
+
+Brand
+
+Model
+
+Year
+
+Price Range
+
+Mileage
+
+City
+
+Region
+
+Fuel
+
+Transmission
+
+Drive Type
+
+Condition
+
+Seller Type
+
+Dealer
+
+Color
+
+Keyword
+
+Sorting
+
+Newest
+
+Oldest
+
+Price Low
+
+Price High
+
+Most Viewed
+
+Most Favorited
+
+---
+
+# LANDING PAGE
+
+Hero
+
+Search Bar
+
+Featured Listings
+
+Latest Listings
+
+Popular Brands
+
+Popular Cities
+
+Benefits
+
+Footer
+
+---
+
+# AUTH
+
+Email
+
+Google Login
+
+Forgot Password
+
+Reset Password
+
+Protected routes
+
+Role system
+
+Buyer
+
+Seller
+
+Dealer
+
+Admin
+
+---
+
+# PROFILE
+
+Users can
+
+Edit profile
+
+Profile image
+
+Phone
+
+WhatsApp
+
+Location
+
+Manage listings
+
+Favorites
+
+Dealer request
+
+Settings
+
+---
+
+# DEALERS
+
+Dealer profile
+
+Logo
+
+Banner
+
+Description
+
+Location
+
+Website
+
+Phone
+
+WhatsApp
+
+Facebook
+
+Instagram
+
+Verified Badge
+
+Showroom page
+
+Dealer listings
+
+Dealer analytics
+
+---
+
+# CREATE LISTING
+
+Step Wizard
+
+Step 1
+
+Vehicle
+
+Step 2
+
+Details
+
+Step 3
+
+Location
+
+Step 4
+
+Photos
+
+Step 5
+
+Preview
+
+Step 6
+
+Publish
+
+---
+
+# VEHICLE PAGE
+
+Large Gallery
+
+Image Zoom
+
+Specifications
+
+Seller Card
+
+Dealer Card
+
+Contact Buttons
+
+Share
+
+Favorite
+
+Report
+
+Similar Listings
+
+Location Map
+
+---
+
+# FAVORITES
+
+Logged-in users can
+
+Save
+
+Remove
+
+Compare
+
+---
+
+# CONTACT
+
+Call Seller
+
+WhatsApp Seller
+
+Message Seller
+
+---
+
+# MAPS
+
+Use Leaflet
+
+OpenStreetMap
+
+Show listing location
+
+Allow approximate pin placement during listing creation
+
+---
+
+# ADMIN PANEL
+
+Dashboard
+
+Statistics
+
+Users
+
+Dealers
+
+Listings
+
+Approvals
+
+Reports
+
+Brands
+
+Models
+
+Vehicle Types
+
+Fuel Types
+
+Colors
+
+Cities
+
+Regions
+
+Exchange Rate
+
+Featured Listings
+
+Analytics
+
+System Logs
+
+---
+
+# SEO
+
+Server Side Rendering
+
+Metadata API
+
+Dynamic Meta
+
+Open Graph
+
+Twitter Cards
+
+JSON-LD
+
+Sitemap.xml
+
+robots.txt
+
+Canonical URLs
+
+Breadcrumbs
+
+Schema.org Vehicle
+
+---
+
+# PERFORMANCE
+
+Lazy Loading
+
+Image Optimization
+
+Infinite Scroll
+
+Pagination
+
+Caching
+
+Code Splitting
+
+Dynamic Imports
+
+Streaming
+
+Edge Rendering where applicable
+
+---
+
+# SECURITY
+
+Rate limiting
+
+Validation
+
+XSS Protection
+
+CSRF Protection
+
+SQL Injection Prevention
+
+Supabase RLS
+
+Secure Storage
+
+Sanitize Inputs
+
+---
+
+# ACCESSIBILITY
+
+WCAG AA
+
+Keyboard Navigation
+
+ARIA Labels
+
+Focus States
+
+Contrast Ratio
+
+---
+
+# INTERNATIONALIZATION
+
+Languages
+
+English
+
+Arabic
+
+Kurdish Sorani
+
+RTL Support
+
+LTR Support
+
+Language switcher
+
+---
+
+# MVP FEATURES
+
+Authentication
+
+Dealer Profiles
+
+User Profiles
+
+Vehicle Listings
+
+Image Upload
+
+Search
+
+Favorites
+
+WhatsApp Contact
+
+Phone Contact
+
+OpenStreetMap
+
+Admin Dashboard
+
+SEO
+
+Dark Mode
+
+Responsive Design
+
+---
+
+# FOLDER STRUCTURE
+
+Use a scalable feature-based architecture.
+
+Example:
+
+```
+app/
+components/
+features/
+lib/
+hooks/
+services/
+types/
+utils/
+styles/
+public/
+```
+
+Keep business logic out of UI components. Use reusable components, typed APIs, and server actions where appropriate.
+
+---
+
+# DEVELOPMENT PROCESS
+
+Do **not** generate the entire project at once.
+
+Work in phases.
+
+### Phase 1
+
+* Project initialization
+* Dependencies
+* Folder structure
+* Supabase integration
+* Authentication
+* Database schema
+* Theme
+* Navigation
+
+**STOP and wait for approval.**
+
+### Phase 2
+
+* Landing page
+* Search
+* Public pages
+* Brand and city pages
+* Footer
+* Responsive layout
+
+**STOP and wait for approval.**
+
+### Phase 3
+
+* User profiles
+* Dealer profiles
+* Listing creation wizard
+* Image uploads
+* Drafts and publishing
+
+**STOP and wait for approval.**
+
+### Phase 4
+
+* Listing details
+* Favorites
+* Contact options
+* Maps
+* Similar listings
+* Sharing
+
+**STOP and wait for approval.**
+
+### Phase 5
+
+* Admin dashboard
+* Moderation
+* Reports
+* Exchange rate management
+* Featured listings
+* Analytics
+
+**STOP and wait for approval.**
+
+### Phase 6
+
+* Performance optimization
+* SEO refinement
+* Accessibility
+* Testing
+* Deployment
+* Production readiness
+
+---
+
+# CODING STANDARDS
+
+* Use strict TypeScript.
+* Avoid `any`.
+* Write clean, modular, documented code.
+* Validate all forms with Zod.
+* Handle loading, empty, and error states.
+* Use reusable UI components.
+* Add comments only where they improve maintainability.
+* Prefer composition over duplication.
+
+---
+
+# SUCCESS CRITERIA
+
+The MVP should:
+
+* Feel like a polished commercial marketplace, not a prototype.
+* Be fully responsive and fast on mobile networks.
+* Allow buyers, sellers, and dealers to complete core tasks end-to-end.
+* Be easy to extend with additional vehicle categories, payment systems, and premium features.
+* Be production-ready, secure, and maintainable.
+
+Begin with **Phase 1 only**, explain the architecture decisions briefly, generate the initial project structure, and **wait for approval before proceeding to the next phase**. This aligns with the product vision and MVP requirements you defined for IQ Motor.   

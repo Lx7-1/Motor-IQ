@@ -1,0 +1,24 @@
+# Motor-IQ 
+
+Motor-IQ is an automated surveillance camera recognition and analysis system designed for real-time license plate detection and vehicle tracking.
+
+## Key Features
+- **Real-time Detection:** High-accuracy license plate recognition via video feeds.
+- **Automated Analytics:** Processes vehicle data for smart traffic and security analysis.
+- **Scalable Architecture:** Designed for high performance and seamless integration.
+
+## Tech Stack
+- **Languages & Frameworks:** Python, OpenCV, YOLO
+- **Database:** PostgreSQL / Redis
+- **Containerization:** Docker
+
+## Installation & Setup
+bash
+# Clone the repository
+git clone [https://github.com/YourUsername/Motor-IQ.git](https://github.com/YourUsername/Motor-IQ.git)
+
+# Navigate to project directory
+cd Motor-IQ
+
+# Run with Docker
+docker-compose up --build
